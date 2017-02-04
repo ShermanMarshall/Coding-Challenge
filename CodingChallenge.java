@@ -8,8 +8,8 @@ public class CodingChallenge {
         StringBuilder two = new StringBuilder();
         StringBuilder three = new StringBuilder();
         
-        FileInputStream fis1 = new FileInputStream(new File("full-path.json"));
-        FileInputStream fis2 = new FileInputStream(new File("main.json"));
+        FileInputStream fis1 = new FileInputStream(new File("src/luiz/coding/challenge/full-path.json"));
+        FileInputStream fis2 = new FileInputStream(new File("src/luiz/coding/challenge/main.json"));
         //FileInputStream fis3 = new FileInputStream(new File("personalinfo-ssn.json"));
         
         byte b;int x = 0;

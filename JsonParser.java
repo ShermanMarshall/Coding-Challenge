@@ -10,7 +10,12 @@ public class JsonParser {
     public JsonParser(String src) {
         json = src;
         try {
-            parsedObject = (isObject = isObject()) ? readObject(new JSONObject()) : readArray(new JSONArray());            
+            if (isObject()) {
+                parsedObject = readObject(new JSONObject());
+                ((JSONObject) parsedObject).init();
+            } else {
+                parsedObject = readArray(new JSONArray());
+            }
         } catch (JSONError e) {
             System.out.println(e.getMessage());
         }
@@ -34,7 +39,7 @@ public class JsonParser {
                 //If dealing with a string
                 if (json.charAt(x) == '"') {
                     String str = readStringOrName();
-                    if (str == null){
+                    if (str == null) {
                         throw new JSONError(err + 0);
                     }
                     //Ignore whiteSpace
@@ -72,8 +77,7 @@ public class JsonParser {
                         } else if (canContinue() && (json.charAt(x) == '[')) {
                             JSONArray array = readArray(new JSONArray());
                             o.put(str, array);
-                        }
-                        else {
+                        } else {
                             Boolean value = readValidValue();
                             o.put(str, value);
                         }
@@ -138,11 +142,9 @@ public class JsonParser {
                     } while (canContinue());
                     array.add(Double.parseDouble(sb.toString()));
                 } else if (canContinue() && (json.charAt(x) == '{')) {
-                    //x-=2;
                     JSONObject obj = readObject(new JSONObject());
                     array.add(obj);
                 } else if (canContinue() && (json.charAt(x) == '[')) {
-                    //x-=2;
                     JSONArray arry = readArray(new JSONArray());
                     array.add(arry);
                 } else if (canContinue() && json.charAt(x) == ']') {
@@ -226,11 +228,12 @@ public class JsonParser {
         x++;
         do {
            sb.append(json.charAt(x++));
-        } while ((x < json.length()) && (json.charAt(x) != '"'));
-        if (++x < json.length())
+        } while (canContinue() && (json.charAt(x) != '"'));
+        if (++x < json.length()) {
             return sb.toString();
-        else 
+        } else {
             return null;
+        }
     }
     
     public boolean isWhiteSpace() {
@@ -254,17 +257,15 @@ public class JsonParser {
                 throw new JSONError("Invalid JSON 1");
             }
             x = 0;
-        } 
+        }
         return isObject;
     }
     
     public static class JSONError extends Exception {
         public String message = "";
-        
         public JSONError(String message) {
             this.message = message;
         }
-        
         public String getMessage() {
             return this.message;
         }

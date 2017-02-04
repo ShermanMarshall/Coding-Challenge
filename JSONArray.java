@@ -8,4 +8,11 @@ public class JSONArray {
     public String toJson() {
         return "";
     }
+    public String toString() {
+        StringBuilder sb = new StringBuilder("[");
+        for (Object o : set) {
+            sb.append(o.toString()).append(",");
+        }
+        return new StringBuilder(sb.substring(0, sb.length()-2).toString()).append("]").toString();
+    }
 }
