@@ -194,4 +194,33 @@ public class JSONObject extends HashMap<String, Object> {
          sb = new StringBuilder(sb.substring(0, sb.length()-1));
          return sb.append("}").toString();
      }
+     
+     public Object findValue(String path, String element, String id) {         
+         JSONArray array = (JSONArray) this.getValue(path);
+         Object o = null;
+         if ((array != null) && (id != null)) {
+            Object tmp;
+            for (int x = 0; x < array.set.size(); x++) {
+               tmp = array.set.get(x);
+               if (tmp != null) {
+                   if (tmp.getClass().equals(JSONObject.class)) {
+                       JSONObject tmpJson = (JSONObject) tmp;
+                       if (tmpJson != null) {
+                           if (tmpJson.containsKey(element)) {
+                               for (String s : tmpJson.keySet()) {
+                                   String value = (String) tmpJson.get(s);
+                                   if (value != null) {
+                                       if (value.equals(id)) {
+                                           return tmpJson.get(element);
+                                       }
+                                   }
+                               }
+                           }
+                       }
+                   }
+               }
+            }
+         }
+         return o;
+     }
 }
