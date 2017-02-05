@@ -37,10 +37,10 @@ public class JsonParser {
                 //Ignore whitespace
                 while (isWhiteSpace()) { x++; }
                 //If dealing with a string
-                if (json.charAt(x) == '"') {
+                if (canContinue() && (json.charAt(x) == '"')) {
                     String str = readStringOrName();
                     if (str == null) {
-                        throw new JSONError(err + 0);
+                        throw new JSONError(failedToReadString);
                     }
                     //Ignore whiteSpace
                     while((isWhiteSpace())) { x++; }
@@ -51,7 +51,7 @@ public class JsonParser {
                             if (value != null) {
                                 o.put(str, value);
                             } else {
-                                throw new JSONError(err);
+                                throw new JSONError(failedToReadString);
                             }
                         } else if (isNumber()) {
                             StringBuilder sb = new StringBuilder();
@@ -101,8 +101,11 @@ public class JsonParser {
                     return o;
                 } else if (canContinue() && (json.charAt(x) == '}')) {
                     return o;
-                }else {
-                    throw new JSONError(err);
+                } else {
+                    while (isWhiteSpace()) { x++;}
+                    if (canContinue()) {
+                        throw new JSONError(err);
+                    }
                 }                
             }
         }
@@ -214,6 +217,7 @@ public class JsonParser {
     }
     
     String err = "Parsing terminated. Stream is not well-formed";
+    String failedToReadString = "Erro parsing String value. Stream is not well formed";
     
     public boolean canContinue() {
         return ( x < json.length());
@@ -230,6 +234,10 @@ public class JsonParser {
            sb.append(json.charAt(x++));
         } while (canContinue() && (json.charAt(x) != '"'));
         if (++x < json.length()) {
+            //Adjust position if the next character of the string is '}'
+            if (json.charAt(x) == '}') {
+                //x--;
+            }
             return sb.toString();
         } else {
             return null;

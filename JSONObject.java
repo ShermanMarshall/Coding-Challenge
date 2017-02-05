@@ -37,7 +37,6 @@ public class JSONObject extends HashMap<String, Object> {
                             o = ((JSONObject) o).get(s);
                         } else if (o.getClass().equals(JSONArray.class)) {                            
                             try {
-                                System.out.println(sb.toString());
                                 o = ((JSONArray) o).set.get(Integer.parseInt(sb.toString()));
                             } catch (NumberFormatException nfe) {
                                 return o;
@@ -54,12 +53,17 @@ public class JSONObject extends HashMap<String, Object> {
      
      public void setValue(String key, Object value) {
         Object o = null;
+        int last = 0;
         if (hasKey(key)) {
             String[] components = key.split("\\.");
             if (components != null) {
+                last = components.length;
                 for (String s : components) {
                     if (o == null) {
                         o = this.get(s);
+                        if ((--last) == 0) {
+                            this.setValue(s, value);
+                        }
                     } else {
                         StringBuilder sb = new StringBuilder();
                         String prefix = null;
@@ -75,16 +79,19 @@ public class JSONObject extends HashMap<String, Object> {
                             o = ((JSONArray) ((JSONObject) o).get(prefix));
                         }
                         if (o.getClass().equals(JSONObject.class)) {
-                            o = ((JSONObject) o).get(s);
+                            if ((--last) == 0) {
+                                this.setValue(s, value);
+                            }
                         } else if (o.getClass().equals(JSONArray.class)) {                            
                             try {
-                                System.out.println(sb.toString());
-                                o = ((JSONArray) o).set.get(Integer.parseInt(sb.toString()));
+                                if ((--last) == 0) {
+                                    o = ((JSONArray) o).set.set(Integer.parseInt(sb.toString()), value);
+                                }
                             } catch (NumberFormatException nfe) {
                                 return;
                             }
-                        } else { 
-                            return;
+                        } else {
+                            
                         }
                     }
                 }
@@ -166,28 +173,7 @@ public class JSONObject extends HashMap<String, Object> {
             System.out.println(s + " : " + path.get(s));
         }
     }
-     
-     /*
-     public String objectToString(Object o) {
-         StringBuilder sb = new StringBuilder();
-         if (o.getClass() == String.class) {
-             return sb.append("\"").append(o).append("\"").toString();
-         } else if (o.getClass() == JSONObject.class) {
-             return ((JSONObject)o).toJson();
-         } else if (o.getClass() == JSONArray.class) {
-             return ((JSONArray)o).toJson();
-         } else
-             return String.valueOf(o);
-     }
-     public String toJson() {
-         StringBuilder sb = new StringBuilder("{");
-         for (String s : this.keySet()) {
-             sb.append('"').append(s).append('"').append(":").append(this.get(s).toString()).append(",");
-         }
-         sb.substring(0, sb.length()-1);
-         return sb.append("}").toString();
-     }
-     */
+    
      public String toString() {
          StringBuilder sb = new StringBuilder("{");
          for (String s : this.keySet()) {
@@ -207,52 +193,5 @@ public class JSONObject extends HashMap<String, Object> {
          }
          sb = new StringBuilder(sb.substring(0, sb.length()-1));
          return sb.append("}").toString();
-     }
-     
-     public static void a(String...args) {
-         String s = "abcdaefg";
-         String[] strs = s.split("\\.");
-         for (String ss : strs) {
-             System.out.println(ss);
-         }
-     }
-     
-     public static void main (String...args) throws Exception {
-        StringBuilder one = new StringBuilder();
-        FileInputStream fis1 = new FileInputStream(new File("src/luiz/coding/challenge/full-path.json"));
-         
-        byte b;int x = 0;
-        while ((b = (byte) fis1.read()) != -1) {
-            //System.out.println(x++ +"-"+(char)b);
-            one.append((char) b);
-        }
-        JsonParser parse = new JsonParser(one.toString());
-        JSONObject o = parse.getJSONObject();
-        
-        System.out.println(o.getValue("itemList.items[6].id"));
-        
-        FileInputStream fis2 = new FileInputStream(new File("src/luiz/coding/challenge/main.json"));
-        one = new StringBuilder();
-        while ((b = (byte) fis2.read()) != -1) {
-            one.append((char)b);
-        }
-        JsonParser second = new JsonParser(one.toString());
-        JSONObject oo = second.getJSONObject();
-        System.out.println(oo);
-
-	/*
-        FileInputStream ssn = new FileInputStream(new File("src/luiz/coding/challenge/personalinfo-phone.json"));
-        one = new StringBuilder();
-        while ((b = (byte) ssn.read()) != -1) {
-            one.append((char)b);
-        }
-        JsonParser social = new JsonParser(one.toString());
-        JSONObject insert = social.getJSONObject();
-        System.out.println(oo);
-        
-        //oo.setValue("itemList.items[2]", insert.toString());
-        
-        System.out.println(oo);
-        */
      }
 }
