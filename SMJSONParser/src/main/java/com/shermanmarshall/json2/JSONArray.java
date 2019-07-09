@@ -1,31 +1,56 @@
 package com.shermanmarshall.json2;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class JSONArray extends ArrayList<Object> {
-	public static JSONArray parse(byte[] src, int[] idx, int length) throws JSONError {
-		JSONArray validArray = new JSONArray();
+public class JSONArray extends JSONInstance {
 
-		while (JSONParseUtils.isWhiteSpace(src[idx[0]])) {
-			idx[0]++;
-		}
-
-		if (idx[0] < length && src[idx[0]] == '[') {
+	private List<Object> elements = new ArrayList();
+	
+	public JSONArray (byte[] src) {
+		this.src = src;
+	} 
+	
+	public static JSONArray parse(byte[] src) throws JSONError {
+		return parse(src, null);
+	}
+	
+	public static JSONArray parse(byte[] src, JSONArray instance) throws JSONError {
+		instance = instance == null ? new JSONArray(src) : instance;
+		
+		//JSONParseUtils.isWhiteSpace(validArray);
+		JSONParseUtils.isWhiteSpace(instance);
+		
+		System.out.println("JSONArray: " + new String(src));
+		if (instance.isInbounds() && instance.atpp() == '[') {
 			boolean isComplete = false;
-			for (; idx[0] < length && !isComplete; idx[0]++) {
-				if (src[idx[0]] == ']')
+			for (; instance.isInbounds() && !isComplete; instance.idx++) {
+				if (src[instance.idx] == ']') {
 					isComplete = true;
-				else {
-					Object value = JSONParseUtils.getValue(src, idx, length);
-					while (JSONParseUtils.isWhiteSpace(src[idx[0]])) {
-						idx[0]++;
+				} else {
+					Object value = JSONParseUtils.getValue(instance);
+					instance.elements.add(value);
+					
+					System.out.println(value.toString());
+					
+					JSONParseUtils.isWhiteSpace(instance);
+					if (instance.at() != ',') {
+						throw new JSONError(JSONError.CANNOT_PARSE + " 4");
 					}
-					if (src[idx[0]] != ',')
-						throw new JSONError(JSONError.CANNOT_PARSE);
 				}
 			}
 		}
+		
+		System.out.println("end");
 
-		return validArray;
+		return instance;
+	}
+	
+	public int getIdx() {
+		return idx;
+	}
+	
+	public void setIdx(int idx) {
+		this.idx = idx;
 	}
 }

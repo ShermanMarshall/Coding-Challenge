@@ -3,9 +3,15 @@ package com.shermanmarshall.json2;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Map;
 
-public class JSONObject extends HashMap {
-
+public class JSONObject extends JSONInstance {
+	private Map<String, Object> elements = new HashMap();
+	
+	public JSONObject(byte[] src) {
+		this.src = src;
+	}
+	
 	public static JSONObject parse(String src) throws JSONError {
 		return parse(src.getBytes());
 	}
@@ -38,42 +44,48 @@ public class JSONObject extends HashMap {
 	}
 
 	public static JSONObject parse(byte[] src) throws JSONError {
-		return parse (src, new int[] {0}, src.length);
+		return parse (src, null);
 	}
 
-	public static JSONObject parse(byte[] src, int[] idx, int length) throws JSONError {
-		JSONObject validObject = new JSONObject();
+	public static JSONObject parse(byte[] src, JSONObject instance) throws JSONError {
+		instance = instance == null ? new JSONObject(src) : instance;
 		boolean isComplete = false;
-		while (JSONParseUtils.isWhiteSpace(src[idx[0]])) {
-			idx[0]++;
-		}
-		if (!(idx[0] < length && src[idx[0]] == '{')) {
-			throw new JSONError(JSONError.INVALID_JSON);
+		JSONParseUtils.isWhiteSpace(instance);
+		if (!(instance.isInbounds() && instance.atpp() == '{')) {
+			throw new JSONError(JSONError.INVALID_JSON + " here");
 		} else {
-			for (; (idx[0] < length) && !isComplete; idx[0]++) {
-				while (JSONParseUtils.isWhiteSpace(src[idx[0]])) {
-					idx[0]++;
-				}
-				if (src[idx[0]] == '}') {
+			for (; instance.isInbounds() && !isComplete; instance.idx++) {
+				JSONParseUtils.isWhiteSpace(instance);
+				if (instance.at() == '}') {
 					isComplete = true;
 				} else {
-					String key = JSONParseUtils.readStringOrKey(src, idx, length);
+					String key = JSONParseUtils.readStringOrKey(instance);
+					System.out.println("Key: " + key);
 					if (key == null) {
 						throw new JSONError(JSONError.CANNOT_PARSE + " - 2");
 					} else {
-						while(JSONParseUtils.isWhiteSpace(src[idx[0]])) {
-							idx[0]++;
-						}
-						if (src[idx[0]] == ':' && (idx[0] + 4 < length)) {	//value delimiter
-							Object value = JSONParseUtils.getValue(src, idx, length);
-							validObject.put(key, value);
+						JSONParseUtils.isWhiteSpace(instance);
+						if (instance.at() == ':') {	//value delimiter
+							instance.idx++;
+							Object value = JSONParseUtils.getValue(instance);
+							instance.elements.put(key, value);
 						} else {
+							//String str = new String(src);
+							//System.out.println(str.substring(idx[0] - 2, str.length()));
 							throw new JSONError(JSONError.CANNOT_PARSE + " - 3");
 						}
 					}
 				}
 			}
 		}
-		return validObject;
+		return instance;
+	}
+	
+	public int getIdx() {
+		return idx;
+	}
+	
+	public void setIdx(int idx) {
+		this.idx = idx;
 	}
 }
