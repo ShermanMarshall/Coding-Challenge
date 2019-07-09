@@ -29,11 +29,4 @@ public class JSONInstance {
 		return src[idx++];
 	}
 
-	/*
-	public byte[] getSrc();
-	public void setSrc(byte[] src);
-	
-	public int getIdx();
-	public void setIdx(int idx);
-	*/
 }

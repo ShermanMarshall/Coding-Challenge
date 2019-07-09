@@ -54,7 +54,7 @@ public class JSONObject extends JSONInstance {
 		if (!(instance.isInbounds() && instance.atpp() == '{')) {
 			throw new JSONError(JSONError.INVALID_JSON + " here");
 		} else {
-			for (; instance.isInbounds() && !isComplete; instance.idx++) {
+			for ( ; instance.isInbounds() && !isComplete; instance.idx++) {
 				JSONParseUtils.isWhiteSpace(instance);
 				if (instance.at() == '}') {
 					isComplete = true;
@@ -70,8 +70,6 @@ public class JSONObject extends JSONInstance {
 							Object value = JSONParseUtils.getValue(instance);
 							instance.elements.put(key, value);
 						} else {
-							//String str = new String(src);
-							//System.out.println(str.substring(idx[0] - 2, str.length()));
 							throw new JSONError(JSONError.CANNOT_PARSE + " - 3");
 						}
 					}

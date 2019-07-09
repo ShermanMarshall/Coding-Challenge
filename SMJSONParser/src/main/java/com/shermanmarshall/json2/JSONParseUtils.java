@@ -21,41 +21,17 @@ public class JSONParseUtils {
 		if (instance.atpp() == '"') {
 			StringBuilder sb = new StringBuilder();
 			do {
-				/* if (src[idx] == '/') {	//escape strings
-					if (((idx + 1) < length) && (src[idx + 1] == '"')) {
-						if (isEscapeQuoted) {
-							if (((idx + 2) < length) && (src[idx + 2] != ',' || src[idx + 2] != ':')) continue;
-						}
-						sb.append((char) src[idx++]);
-					}
-				}*/
 				sb.append((char) instance.atpp());
-	
 			} while ((instance.isInbounds()) && (instance.at() != '"'));
 			instance.idx++;
 			content = sb.toString();
 		} else {
-			//System.out.println((idx[0] -1) + " " + ((char) src[idx[0] -1]) + " " + (src[idx[0]-1]));
-			//System.out.println(new String(src));
 			System.out.println("here");
 		}
 		return content;
-		/*
-		if (++idx < json.length()) {
-			// Adjust position if the next character of the string is '}'
-			if (json.charAt(idx) == '}') {
-				// idx--;
-			}
-			return sb.toString();
-		} else {
-			return null;
-		}
-		*/
 	}
 	
 	public static Object getValue(JSONInstance instance) throws JSONError {
-			//byte[] src, int[] idx) throws JSONError {
-		//JSONParseUtils.isWhiteSpace(src, idx);
 		JSONParseUtils.isWhiteSpace(instance);
 		if (instance.at() == '"') {
 			return JSONParseUtils.readStringOrKey(instance);
@@ -66,10 +42,6 @@ public class JSONParseUtils {
 		} else if (Character.isDigit(instance.at()) || instance.at() == '-') {
 			instance.atpp();
 			return readNumber(instance);
-			//int value = 0; if (idx + 4 < length) { value = readInt(src, idx, length); }
-			//char nextChar = (char) src[idx + 4];
-			//if (JSONParseUtils.isWhiteSpace((byte) nextChar) || nextChar == ',' || nextChar == '}')
-			//	return (Integer) value;
 		} else {
 			return readBoolean(instance);
 		}
@@ -161,9 +133,6 @@ public class JSONParseUtils {
 		}
 		byte[] subset = getSubset(instance.idx, endOfObject, instance.src);
 		instance.idx = endOfObject;
-		//new byte[1 + endOfObject - idx[0]];
-		//System.arraycopy(src, idx[0], subset, 0, subset.length);
-		//System.out.println(subset.length + " " + new String(subset));
 		return JSONObject.parse(subset);
 	}
 	
@@ -183,9 +152,6 @@ public class JSONParseUtils {
 		}
 		byte[] subset = getSubset(instance.idx, endOfArray, instance.src);
 		instance.idx = endOfArray;
-		//new byte[1 + endOfArray - idx[0]];
-		//System.arraycopy(src, idx[0], subset, 0, subset.length);
-		//System.out.println(subset.length + " " + new String(subset));
 		return JSONArray.parse(subset);
 	}
 	

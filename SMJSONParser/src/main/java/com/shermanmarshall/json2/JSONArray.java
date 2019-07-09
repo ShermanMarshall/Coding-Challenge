@@ -17,8 +17,6 @@ public class JSONArray extends JSONInstance {
 	
 	public static JSONArray parse(byte[] src, JSONArray instance) throws JSONError {
 		instance = instance == null ? new JSONArray(src) : instance;
-		
-		//JSONParseUtils.isWhiteSpace(validArray);
 		JSONParseUtils.isWhiteSpace(instance);
 		
 		System.out.println("JSONArray: " + new String(src));
